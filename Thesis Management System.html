@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thesis Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .header h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .role-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .role-student { background: #48bb78; color: white; }
+        .role-teacher { background: #ed8936; color: white; }
+        .role-admin { background: #e53e3e; color: white; }
+        .role-public { background: #4299e1; color: white; }
+
+        .major-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .major-cs { background: #3182ce; color: white; }
+        .major-ee { background: #38a169; color: white; }
+        .major-me { background: #d69e2e; color: white; }
+        .major-ce { background: #e53e3e; color: white; }
+        .major-it { background: #805ad5; color: white; }
+        .major-bio { background: #319795; color: white; }
+
+        .login-form, .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+        }
+
+        .btn-preview {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            margin-left: 5px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-section {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group .form-group {
+            margin-bottom: 0;
+            min-width: 200px;
+        }
+
+        .thesis-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s ease;
+        }
+
+        .thesis-card:hover {
+            transform: translateX(5px);
+        }
+
+        .thesis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .thesis-title {
+            flex: 1;
+        }
+
+        .thesis-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .status-pending { border-left-color: #ed8936; }
+        .status-approved { border-left-color: #48bb78; }
+        .status-rejected { border-left-color: #e53e3e; }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending-badge { background: #fed7aa; color: #c2410c; }
+        .status-approved-badge { background: #bbf7d0; color: #166534; }
+        .status-rejected-badge { background: #fecaca; color: #dc2626; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .file-preview-area {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            min-height: 200px;
+            display: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f0f9ff;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .preview-content {
+            background: white;
+            margin: 2% auto;
+            padding: 20px;
+            border-radius: 15px;
+            width: 95%;
+            max-width: 1000px;
+            height: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .preview-frame {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+            overflow: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .filter-group {
+                flex-direction: column;
+            }
+
+            .thesis-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success { background: #48bb78; }
+        .notification.error { background: #e53e3e; }
+        .notification.info { background: #4299e1; }
+
+        .demo-status {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Demo Status -->
+        <div class="demo-status">
+            🚀 LIVE DEMO RUNNING - Test the login restrictions with the accounts below
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>🎓 Thesis Management System</h1>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div>
+                    <span>Welcome, <strong id="currentUsername"></strong></span>
+                    <span class="role-badge" id="currentUserRole"></span>
+                    <span class="major-badge" id="currentUserMajor" style="display: none;"></span>
+                </div>
+                <button onclick="logout()" class="btn-secondary">Logout</button>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-form" id="loginSection">
+            <h2>Login / Register</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('register')">Register</div>
+                <div class="tab" onclick="switchTab('public')">Public Access</div>
+            </div>
+
+            <div id="loginForm">
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label>Role:</label>
+                    <select id="loginRole" onchange="toggleMajorField('login')">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group" id="loginMajorGroup">
+                    <label>Major:</label>
+                    <select id="loginMajor">
+                        <option value="cs">Computer Science</option>
+                        <option value="ee">Electrical Engineering</option>
+                        <option value="me">Mechanical Engineering</option>
+                        <option value="ce">Civil Engineering</option>
+                        <option value="it">Information Technology</option>
+                        <option value="bio">Bioengineering</option>
+                    </select>
+                </div>
+                <button onclick="login()">Login</button>
+                <div style="margin-top: 15px; padding: 15px; background: #f0f9ff; border-radius: 8px; font-size: 14px;">
+                    <strong>🧪 TEST ACCOUNTS:</strong><br>
+                    • Admin: admin / admin123<br>
+                    • Teacher: teacher1 / teacher123 (can access ALL majors)<br>
+                    • Student: student1 / student123 (<span style="color: red; font-weight: bold;">MUST select Computer Science</span>)<br><br>
+                    <strong>🔴 Test the restriction:</strong> Try logging as student1 with wrong major!
+                </div>
+            </div>
+
+            <div id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="regUsername" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="regEmail" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="regPassword" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label>Full Name:</label>
+                    <input type="text" id="regFullName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>Major:</label>
+                    <select id="regMajor">
+                        <option value="cs">Computer Science</option>
+                        <option value="ee">Electrical Engineering</option>
+                        <option value="me">Mechanical Engineering</option>
+                        <option value="ce">Civil Engineering</option>
+                        <option value="it">Information Technology</option>
+                        <option value="bio">Bioengineering</option>
+                    </select>
+                </div>
+                <button onclick="register()">Register as Student</button>
+            </div>
+
+            <div id="publicForm" class="hidden">
+                <p>Access approved theses without login</p>
+                <button onclick="accessPublic()">Browse Public Theses</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content hidden" id="mainContent">
+            <!-- Student Dashboard -->
+            <div id="studentDashboard" class="hidden">
+                <h2>Student Dashboard</h2>
+                <div class="tabs">
+                    <div class="tab active" onclick="switchStudentTab('upload')">Upload Thesis</div>
+                    <div class="tab" onclick="switchStudentTab('status')">My Submissions</div>
+                </div>
+
+                <div id="studentUpload">
+                    <div class="file-upload" id="fileUpload">
+                        <h3>📄 Upload Your Thesis</h3>
+                        <p>Drag and drop your PDF file here or click to browse</p>
+                        <input type="file" id="thesisFile" accept=".pdf" style="display: none;">
+                        <button onclick="document.getElementById('thesisFile').click()">Choose File</button>
+                    </div>
+                    <div class="file-preview-area" id="filePreviewArea">
+                        <h4>File Preview</h4>
+                        <div id="filePreview"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Thesis Title:</label>
+                        <input type="text" id="thesisTitle" placeholder="Enter thesis title">
+                    </div>
+                    <div class="form-group">
+                        <label>Major:</label>
+                        <select id="thesisMajor">
+                            <option value="cs">Computer Science</option>
+                            <option value="ee">Electrical Engineering</option>
+                            <option value="me">Mechanical Engineering</option>
+                            <option value="ce">Civil Engineering</option>
+                            <option value="it">Information Technology</option>
+                            <option value="bio">Bioengineering</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Abstract:</label>
+                        <textarea id="thesisAbstract" rows="5" placeholder="Enter thesis abstract"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Keywords:</label>
+                        <input type="text" id="thesisKeywords" placeholder="Enter keywords (comma separated)">
+                    </div>
+                    <button onclick="submitThesis()">Submit Thesis</button>
+                </div>
+
+                <div id="studentStatus" class="hidden">
+                    <h3>My Thesis Submissions</h3>
+                    <div id="myTheses"></div>
+                </div>
+            </div>
+
+            <!-- Teacher Dashboard -->
+            <div id="teacherDashboard" class="hidden">
+                <h2>Teacher Dashboard</h2>
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTeacherTab('pending')">Pending Review</div>
+                    <div class="tab" onclick="switchTeacherTab('reviewed')">Reviewed</div>
+                </div>
+
+                <div id="teacherPending">
+                    <div class="filter-section">
+                        <h4>Filter Theses</h4>
+                        <div class="filter-group">
+                            <div class="form-group">
+                                <label>Filter by Major:</label>
+                                <select id="teacherMajorFilter" onchange="loadPendingTheses()">
+                                    <option value="all">All Majors</option>
+                                    <option value="cs">Computer Science</option>
+                                    <option value="ee">Electrical Engineering</option>
+                                    <option value="me">Mechanical Engineering</option>
+                                    <option value="ce">Civil Engineering</option>
+                                    <option value="it">Information Technology</option>
+                                    <option value="bio">Bioengineering</option>
+                                </select>
+                            </div>
+                            <button onclick="resetFilters()" class="btn-secondary">Reset Filters</button>
+                        </div>
+                    </div>
+                    <h3>Pending Thesis Reviews</h3>
+                    <div id="pendingTheses"></div>
+                </div>
+
+                <div id="teacherReviewed" class="hidden">
+                    <div class="filter-section">
+                        <h4>Filter Reviewed Theses</h4>
+                        <div class="filter-group">
+                            <div class="form-group">
+                                <label>Filter by Major:</label>
+                                <select id="teacherReviewedMajorFilter" onchange="loadReviewedTheses()">
+                                    <option value="all">All Majors</option>
+                                    <option value="cs">Computer Science</option>
+                                    <option value="ee">Electrical Engineering</option>
+                                    <option value="me">Mechanical Engineering</option>
+                                    <option value="ce">Civil Engineering</option>
+                                    <option value="it">Information Technology</option>
+                                    <option value="bio">Bioengineering</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Filter by Status:</label>
+                                <select id="teacherStatusFilter" onchange="loadReviewedTheses()">
+                                    <option value="all">All Status</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <button onclick="resetReviewedFilters()" class="btn-secondary">Reset Filters</button>
+                        </div>
+                    </div>
+                    <h3>Previously Reviewed</h3>
+                    <div id="reviewedTheses"></div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="hidden">
+                <h2>Admin Dashboard</h2>
+                <div class="tabs">
+                    <div class="tab active" onclick="switchAdminTab('stats')">Statistics</div>
+                    <div class="tab" onclick="switchAdminTab('users')">Manage Users</div>
+                    <div class="tab" onclick="switchAdminTab('theses')">All Theses</div>
+                </div>
+
+                <div id="adminStats">
+                    <div class="grid" id="statsGrid"></div>
+                </div>
+
+                <div id="adminUsers" class="hidden">
+                    <h3>User Management</h3>
+                    <div id="usersList"></div>
+                </div>
+
+                <div id="adminTheses" class="hidden">
+                    <div class="filter-section">
+                        <h4>Filter All Theses</h4>
+                        <div class="filter-group">
+                            <div class="form-group">
+                                <label>Filter by Major:</label>
+                                <select id="adminMajorFilter" onchange="loadAllTheses()">
+                                    <option value="all">All Majors</option>
+                                    <option value="cs">Computer Science</option>
+                                    <option value="ee">Electrical Engineering</option>
+                                    <option value="me">Mechanical Engineering</option>
+                                    <option value="ce">Civil Engineering</option>
+                                    <option value="it">Information Technology</option>
+                                    <option value="bio">Bioengineering</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Filter by Status:</label>
+                                <select id="adminStatusFilter" onchange="loadAllTheses()">
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <button onclick="resetAdminFilters()" class="btn-secondary">Reset Filters</button>
+                        </div>
+                    </div>
+                    <h3>All Thesis Submissions</h3>
+                    <div id="allTheses"></div>
+                </div>
+            </div>
+
+            <!-- Public Dashboard -->
+            <div id="publicDashboard" class="hidden">
+                <h2>📚 Public Thesis Repository</h2>
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <div class="form-group">
+                            <label>Search:</label>
+                            <input type="text" id="searchInput" placeholder="Search theses by title, keywords, or author..." 
+                                   onkeyup="searchPublicTheses()">
+                        </div>
+                        <div class="form-group">
+                            <label>Filter by Major:</label>
+                            <select id="publicMajorFilter" onchange="loadPublicData()">
+                                <option value="all">All Majors</option>
+                                <option value="cs">Computer Science</option>
+                                <option value="ee">Electrical Engineering</option>
+                                <option value="me">Mechanical Engineering</option>
+                                <option value="ce">Civil Engineering</option>
+                                <option value="it">Information Technology</option>
+                                <option value="bio">Bioengineering</option>
+                            </select>
+                        </div>
+                        <button onclick="resetPublicFilters()" class="btn-secondary">Reset</button>
+                    </div>
+                </div>
+                <div id="publicTheses"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h3 id="previewTitle">Thesis Preview</h3>
+                <button onclick="closePreviewModal()" class="close">&times;</button>
+            </div>
+            <div class="preview-frame" id="previewFrame">
+                <p>Loading preview...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h3>Review Thesis</h3>
+            <div id="reviewThesisDetails"></div>
+            <div class="form-group">
+                <label>Comments:</label>
+                <textarea id="reviewComments" rows="4" placeholder="Enter your review comments..."></textarea>
+            </div>
+            <button onclick="approveThesis()" class="btn-success">✅ Approve</button>
+            <button onclick="rejectThesis()" class="btn-danger">❌ Reject</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Major configurations
+        const MAJORS = {
+            cs: 'Computer Science',
+            ee: 'Electrical Engineering', 
+            me: 'Mechanical Engineering',
+            ce: 'Civil Engineering',
+            it: 'Information Technology',
+            bio: 'Bioengineering'
+        };
+
+        // Database simulation using memory storage
+        class Database {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                if (!this.theses) {
+                    this.theses = [];
+                }
+                if (!this.users) {
+                    this.users = [
+                        { id: 1, username: 'admin', password: 'admin123', role: 'admin', fullName: 'System Administrator', email: 'admin@system.com' },
+                        { id: 2, username: 'teacher1', password: 'teacher123', role: 'teacher', fullName: 'Dr. John Teacher', email: 'teacher@university.com', major: 'cs' },
+                        { id: 3, username: 'student1', password: 'student123', role: 'student', fullName: 'Alice Student', email: 'alice@university.com', major: 'cs' }
+                    ];
+                }
+                if (!this.fileStorage) {
+                    this.fileStorage = new Map();
+                }
+            }
+
+            getUsers() {
+                return this.users || [];
+            }
+
+            saveUsers(users) {
+                this.users = users;
+            }
+
+            getTheses() {
+                return this.theses || [];
+            }
+
+            saveTheses(theses) {
+                this.theses = theses;
+            }
+
+            addUser(user) {
+                const users = this.getUsers();
+                user.id = Date.now();
+                users.push(user);
+                this.saveUsers(users);
+                return user;
+            }
+
+            addThesis(thesis) {
+                const theses = this.getTheses();
+                thesis.id = Date.now();
+                thesis.submissionDate = new Date().toISOString();
+                thesis.status = 'pending';
+                theses.push(thesis);
+                this.saveTheses(theses);
+                return thesis;
+            }
+
+            updateThesis(id, updates) {
+                const theses = this.getTheses();
+                const index = theses.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    Object.assign(theses[index], updates);
+                    this.saveTheses(theses);
+                    return theses[index];
+                }
+                return null;
+            }
+
+            // File storage methods
+            storeFile(thesisId, file) {
+                this.fileStorage.set(thesisId, file);
+            }
+
+            getFile(thesisId) {
+                return this.fileStorage.get(thesisId);
+            }
+        }
+
+        // Initialize database and current user
+        const db = new Database();
+        let currentUser = null;
+        let currentReviewThesis = null;
+
+        // Utility functions
+        function getMajorName(majorCode) {
+            return MAJORS[majorCode] || majorCode;
+        }
+
+        function getMajorBadgeClass(majorCode) {
+            return `major-${majorCode}`;
+        }
+
+        function toggleMajorField(formType) {
+            const role = document.getElementById(`${formType}Role`).value;
+            const majorGroup = document.getElementById(`${formType}MajorGroup`);
+            
+            if (role === 'admin') {
+                majorGroup.style.display = 'none';
+            } else {
+                majorGroup.style.display = 'block';
+            }
+        }
+
+        // Authentication functions
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const role = document.getElementById('loginRole').value;
+            const major = document.getElementById('loginMajor').value;
+
+            if (!username || !password) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            const users = db.getUsers();
+            let user = users.find(u => u.username === username && u.password === password && u.role === role);
+
+            if (user) {
+                // For students, validate that the selected major matches their registered major
+                if (role === 'student' && user.major && user.major !== major) {
+                    showNotification(`Access denied. This student account is registered for ${getMajorName(user.major)} only. Please select the correct major.`, 'error');
+                    return;
+                }
+                
+                // For teachers and admins, allow access to all majors
+                // For students, only allow their registered major
+                if (role !== 'admin') {
+                    if (role === 'student') {
+                        // Students can only access their own major
+                        user.major = user.major || major; // Set major if not already set
+                    } else if (role === 'teacher') {
+                        // Teachers can access all majors
+                        user.major = major; // Allow teachers to work with selected major
+                    }
+                    db.saveUsers(users);
+                }
+                
+                currentUser = user;
+                showDashboard();
+                showNotification(`Welcome, ${user.fullName}!`, 'success');
+            } else {
+                showNotification('Invalid credentials or role mismatch', 'error');
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const fullName = document.getElementById('regFullName').value;
+            const major = document.getElementById('regMajor').value;
+
+            if (!username || !email || !password || !fullName) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            const users = db.getUsers();
+            if (users.find(u => u.username === username)) {
+                showNotification('Username already exists', 'error');
+                return;
+            }
+
+            const newUser = {
+                username,
+                email,
+                password,
+                fullName,
+                role: 'student',
+                major
+            };
+
+            db.addUser(newUser);
+            showNotification('Registration successful! Please login.', 'success');
+            switchTab('login');
+        }
+
+        function accessPublic() {
+            currentUser = { role: 'public', fullName: 'Public User' };
+            showDashboard();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('userInfo').style.display = 'none';
+            
+            // Reset forms
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('currentUsername').textContent = currentUser.fullName;
+            
+            const roleElement = document.getElementById('currentUserRole');
+            roleElement.textContent = currentUser.role;
+            roleElement.className = `role-badge role-${currentUser.role}`;
+
+            // Show major badge for students and teachers
+            const majorElement = document.getElementById('currentUserMajor');
+            if (currentUser.major && currentUser.role !== 'admin') {
+                majorElement.textContent = getMajorName(currentUser.major);
+                majorElement.className = `major-badge ${getMajorBadgeClass(currentUser.major)}`;
+                majorElement.style.display = 'inline';
+            } else {
+                majorElement.style.display = 'none';
+            }
+
+            // Show appropriate dashboard
+            hideAllDashboards();
+            switch (currentUser.role) {
+                case 'student':
+                    document.getElementById('studentDashboard').classList.remove('hidden');
+                    // Set student's major in thesis form
+                    document.getElementById('thesisMajor').value = currentUser.major;
+                    loadStudentData();
+                    break;
+                case 'teacher':
+                    document.getElementById('teacherDashboard').classList.remove('hidden');
+                    loadTeacherData();
+                    break;
+                case 'admin':
+                    document.getElementById('adminDashboard').classList.remove('hidden');
+                    loadAdminData();
+                    break;
+                case 'public':
+                    document.getElementById('publicDashboard').classList.remove('hidden');
+                    loadPublicData();
+                    break;
+            }
+        }
+
+        function hideAllDashboards() {
+            document.getElementById('studentDashboard').classList.add('hidden');
+            document.getElementById('teacherDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('publicDashboard').classList.add('hidden');
+        }
+
+        // Tab switching functions
+        function switchTab(tab) {
+            document.querySelectorAll('.login-form .tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.login-form .tab:nth-child(${tab === 'login' ? '1' : tab === 'register' ? '2' : '3'})`).classList.add('active');
+            
+            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+            document.getElementById('publicForm').classList.toggle('hidden', tab !== 'public');
+        }
+
+        function switchStudentTab(tab) {
+            document.querySelectorAll('#studentDashboard .tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`#studentDashboard .tab:nth-child(${tab === 'upload' ? '1' : '2'})`).classList.add('active');
+            
+            document.getElementById('studentUpload').classList.toggle('hidden', tab !== 'upload');
+            document.getElementById('studentStatus').classList.toggle('hidden', tab !== 'status');
+        }
+
+        function switchTeacherTab(tab) {
+            document.querySelectorAll('#teacherDashboard .tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`#teacherDashboard .tab:nth-child(${tab === 'pending' ? '1' : '2'})`).classList.add('active');
+            
+            document.getElementById('teacherPending').classList.toggle('hidden', tab !== 'pending');
+            document.getElementById('teacherReviewed').classList.toggle('hidden', tab !== 'reviewed');
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('#adminDashboard .tab').forEach(t => t.classList.remove('active'));
+            const tabIndex = tab === 'stats' ? 1 : tab === 'users' ? 2 : 3;
+            document.querySelector(`#adminDashboard .tab:nth-child(${tabIndex})`).classList.add('active');
+            
+            document.getElementById('adminStats').classList.toggle('hidden', tab !== 'stats');
+            document.getElementById('adminUsers').classList.toggle('hidden', tab !== 'users');
+            document.getElementById('adminTheses').classList.toggle('hidden', tab !== 'theses');
+        }
+
+        // Student functions
+        function setupFileUpload() {
+            const fileUpload = document.getElementById('fileUpload');
+            const fileInput = document.getElementById('thesisFile');
+
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.classList.remove('dragover');
+            });
+
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type === 'application/pdf') {
+                    fileInput.files = files;
+                    updateFileDisplay(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    updateFileDisplay(fileInput.files[0]);
+                }
+            });
+        }
+
+        function updateFileDisplay(file) {
+            const fileUpload = document.getElementById('fileUpload');
+            const previewArea = document.getElementById('filePreviewArea');
+            const previewDiv = document.getElementById('filePreview');
+            
+            fileUpload.querySelector('p').textContent = `Selected: ${file.name}`;
+            previewArea.style.display = 'block';
+            
+            // Create file reader for preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileContent = e.target.result;
+                previewDiv.innerHTML = `
+                    <div class="file-info">
+                        <div>
+                            <strong>📄 ${file.name}</strong><br>
+                            <small>Size: ${(file.size / 1024 / 1024).toFixed(2)} MB | Type: ${file.type}</small>
+                        </div>
+                        <button onclick="previewUploadedFile()" class="btn-preview">👁️ Preview</button>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                        <small>✅ File loaded successfully. Ready for submission.</small>
+                    </div>
+                `;
+                
+                // Store file data for preview
+                window.currentUploadedFile = {
+                    data: fileContent,
+                    name: file.name,
+                    type: file.type
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function submitThesis() {
+            const title = document.getElementById('thesisTitle').value;
+            const major = document.getElementById('thesisMajor').value;
+            const abstract = document.getElementById('thesisAbstract').value;
+            const keywords = document.getElementById('thesisKeywords').value;
+            const fileInput = document.getElementById('thesisFile');
+
+            if (!title || !abstract || !keywords || !fileInput.files.length) {
+                showNotification('Please fill in all fields and select a file', 'error');
+                return;
+            }
+
+            const thesis = {
+                title,
+                major,
+                abstract,
+                keywords,
+                filename: fileInput.files[0].name,
+                studentId: currentUser.id,
+                studentName: currentUser.fullName
+            };
+
+            const savedThesis = db.addThesis(thesis);
+            
+            // Store the file data
+            if (window.currentUploadedFile) {
+                db.storeFile(savedThesis.id, window.currentUploadedFile);
+            }
+
+            showNotification('Thesis submitted successfully!', 'success');
+            
+            // Reset form
+            document.getElementById('thesisTitle').value = '';
+            document.getElementById('thesisAbstract').value = '';
+            document.getElementById('thesisKeywords').value = '';
+            fileInput.value = '';
+            document.getElementById('fileUpload').querySelector('p').textContent = 'Drag and drop your PDF file here or click to browse';
+            document.getElementById('filePreviewArea').style.display = 'none';
+            window.currentUploadedFile = null;
+            
+            loadStudentData();
+        }
+
+        function loadStudentData() {
+            const theses = db.getTheses().filter(t => t.studentId === currentUser.id);
+            const container = document.getElementById('myTheses');
+            
+            if (theses.length === 0) {
+                container.innerHTML = '<p>No thesis submissions yet.</p>';
+                return;
+            }
+
+            container.innerHTML = theses.map(thesis => `
+                <div class="thesis-card status-${thesis.status}">
+                    <div class="thesis-header">
+                        <div class="thesis-title">
+                            <h4>${thesis.title}</h4>
+                        </div>
+                        <div class="thesis-badges">
+                            <span class="major-badge ${getMajorBadgeClass(thesis.major)}">${getMajorName(thesis.major)}</span>
+                            <span class="status-badge status-${thesis.status}-badge">${thesis.status.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <p><strong>Submitted:</strong> ${new Date(thesis.submissionDate).toLocaleDateString()}</p>
+                    ${thesis.comments ? `<p><strong>Comments:</strong> ${thesis.comments}</p>` : ''}
+                    ${thesis.reviewDate ? `<p><strong>Reviewed:</strong> ${new Date(thesis.reviewDate).toLocaleDateString()}</p>` : ''}
+                    <div class="file-info">
+                        <span>📄 ${thesis.filename}</span>
+                        <button onclick="previewThesis(${thesis.id})" class="btn-preview">👁️ Preview</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Teacher functions
+        function loadTeacherData() {
+            loadPendingTheses();
+            loadReviewedTheses();
+        }
+
+        function loadPendingTheses() {
+            // Teachers can access all pending theses regardless of major
+            let theses = db.getTheses().filter(t => t.status === 'pending');
+            
+            // Apply major filter if selected
+            const majorFilter = document.getElementById('teacherMajorFilter').value;
+            if (majorFilter !== 'all') {
+                theses = theses.filter(t => t.major === majorFilter);
+            }
+
+            const container = document.getElementById('pendingTheses');
+            
+            if (theses.length === 0) {
+                const filterText = majorFilter !== 'all' ? ` for ${getMajorName(majorFilter)}` : '';
+                container.innerHTML = `<p>No pending thesis reviews${filterText}.</p>`;
+                return;
+            }
+
+            container.innerHTML = theses.map(thesis => `
+                <div class="thesis-card status-pending">
+                    <div class="thesis-header">
+                        <div class="thesis-title">
+                            <h4>${thesis.title}</h4>
+                        </div>
+                        <div class="thesis-badges">
+                            <span class="major-badge ${getMajorBadgeClass(thesis.major)}">${getMajorName(thesis.major)}</span>
+                        </div>
+                    </div>
+                    <p><strong>Student:</strong> ${thesis.studentName}</p>
+                    <p><strong>Submitted:</strong> ${new Date(thesis.submissionDate).toLocaleDateString()}</p>
+                    <p><strong>Abstract:</strong> ${thesis.abstract.substring(0, 200)}...</p>
+                    <p><strong>Keywords:</strong> ${thesis.keywords}</p>
+                    <div class="file-info">
+                        <span>📄 ${thesis.filename}</span>
+                        <button onclick="previewThesis(${thesis.id})" class="btn-preview">👁️ Preview</button>
+                    </div>
+                    <button onclick="openReviewModal(${thesis.id})">Review Thesis</button>
+                </div>
+            `).join('');
+        }
+
+        function loadReviewedTheses() {
+            // Teachers can access all reviewed theses regardless of major
+            let theses = db.getTheses().filter(t => t.status !== 'pending');
+            
+            // Apply filters
+            const majorFilter = document.getElementById('teacherReviewedMajorFilter').value;
+            const statusFilter = document.getElementById('teacherStatusFilter').value;
+            
+            if (majorFilter !== 'all') {
+                theses = theses.filter(t => t.major === majorFilter);
+            }
+            
+            if (statusFilter !== 'all') {
+                theses = theses.filter(t => t.status === statusFilter);
+            }
+
+            const container = document.getElementById('reviewedTheses');
+            
+            if (theses.length === 0) {
+                container.innerHTML = '<p>No reviewed theses matching the selected filters.</p>';
+                return;
+            }
+
+            container.innerHTML = theses.map(thesis => `
+                <div class="thesis-card status-${thesis.status}">
+                    <div class="thesis-header">
+                        <div class="thesis-title">
+                            <h4>${thesis.title}</h4>
+                        </div>
+                        <div class="thesis-badges">
+                            <span class="major-badge ${getMajorBadgeClass(thesis.major)}">${getMajorName(thesis.major)}</span>
+                            <span class="status-badge status-${thesis.status}-badge">${thesis.status.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <p><strong>Student:</strong> ${thesis.studentName}</p>
+                    <p><strong>Reviewed:</strong> ${new Date(thesis.reviewDate).toLocaleDateString()}</p>
+                    ${thesis.comments ? `<p><strong>Comments:</strong> ${thesis.comments}</p>` : ''}
+                    <div class="file-info">
+                        <span>📄 ${thesis.filename}</span>
+                        <button onclick="previewThesis(${thesis.id})" class="btn-preview">👁️ Preview</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function resetFilters() {
+            document.getElementById('teacherMajorFilter').value = 'all';
+            loadPendingTheses();
+        }
+
+        function resetReviewedFilters() {
+            document.getElementById('teacherReviewedMajorFilter').value = 'all';
+            document.getElementById('teacherStatusFilter').value = 'all';
+            loadReviewedTheses();
+        }
+
+        function openReviewModal(thesisId) {
+            const thesis = db.getTheses().find(t => t.id === thesisId);
+            if (!thesis) return;
+
+            currentReviewThesis = thesis;
+            document.getElementById('reviewThesisDetails').innerHTML = `
+                <h4>${thesis.title}</h4>
+                <p><strong>Student:</strong> ${thesis.studentName}</p>
+                <p><strong>Major:</strong> <span class="major-badge ${getMajorBadgeClass(thesis.major)}">${getMajorName(thesis.major)}</span></p>
+                <p><strong>Submitted:</strong> ${new Date(thesis.submissionDate).toLocaleDateString()}</p>
+                <p><strong>Abstract:</strong> ${thesis.abstract}</p>
+                <p><strong>Keywords:</strong> ${thesis.keywords}</p>
+                <p><strong>File:</strong> ${thesis.filename}</p>
+            `;
+            document.getElementById('reviewComments').value = '';
+            document.getElementById('reviewModal').style.display = 'block';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            currentReviewThesis = null;
+        }
+
+        function approveThesis() {
+            if (!currentReviewThesis) return;
+            
+            const comments = document.getElementById('reviewComments').value;
+            db.updateThesis(currentReviewThesis.id, {
+                status: 'approved',
+                comments: comments,
+                reviewDate: new Date().toISOString(),
+                reviewerId: currentUser.id,
+                reviewerName: currentUser.fullName
+            });
+
+            showNotification('Thesis approved successfully!', 'success');
+            closeReviewModal();
+            loadTeacherData();
+        }
+
+        function rejectThesis() {
+            if (!currentReviewThesis) return;
+            
+            const comments = document.getElementById('reviewComments').value;
+            if (!comments) {
+                showNotification('Please provide comments for rejection', 'error');
+                return;
+            }
+
+            db.updateThesis(currentReviewThesis.id, {
+                status: 'rejected',
+                comments: comments,
+                reviewDate: new Date().toISOString(),
+                reviewerId: currentUser.id,
+                reviewerName: currentUser.fullName
+            });
+
+            showNotification('Thesis rejected', 'info');
+            closeReviewModal();
+            loadTeacherData();
+        }
+
+        // Admin functions
+        function loadAdminData() {
+            loadAdminStats();
+            loadUsersList();
+            loadAllTheses();
+        }
+
+        function loadAdminStats() {
+            const theses = db.getTheses();
+            const users = db.getUsers();
+            
+            const stats = {
+                totalTheses: theses.length,
+                pendingTheses: theses.filter(t => t.status === 'pending').length,
+                approvedTheses: theses.filter(t => t.status === 'approved').length,
+                rejectedTheses: theses.filter(t => t.status === 'rejected').length,
+                totalUsers: users.length,
+                students: users.filter(u => u.role === 'student').length,
+                teachers: users.filter(u => u.role === 'teacher').length
+            };
+
+            // Get stats by major
+            const majorStats = {};
+            Object.keys(MAJORS).forEach(major => {
+                majorStats[major] = theses.filter(t => t.major === major).length;
+            });
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalTheses}</div>
+                    <div>Total Theses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.pendingTheses}</div>
+                    <div>Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.approvedTheses}</div>
+                    <div>Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.rejectedTheses}</div>
+                    <div>Rejected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalUsers}</div>
+                    <div>Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.students}</div>
+                    <div>Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.teachers}</div>
+                    <div>Teachers</div>
+                </div>
+                ${Object.keys(MAJORS).map(major => `
+                    <div class="stat-card">
+                        <div class="stat-number">${majorStats[major]}</div>
+                        <div>${getMajorName(major)} Theses</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function loadUsersList() {
+            const users = db.getUsers();
+            const container = document.getElementById('usersList');
+            
+            container.innerHTML = users.map(user => `
+                <div class="thesis-card">
+                    <div class="thesis-header">
+                        <div class="thesis-title">
+                            <h4>${user.fullName}</h4>
+                        </div>
+                        <div class="thesis-badges">
+                            ${user.major ? `<span class="major-badge ${getMajorBadgeClass(user.major)}">${getMajorName(user.major)}</span>` : ''}
+                            <span class="role-badge role-${user.role}">${user.role}</span>
+                        </div>
+                    </div>
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    ${user.id !== currentUser.id ? `<button onclick="deleteUser(${user.id})" class="btn-danger">Delete User</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function loadAllTheses() {
+            let theses = db.getTheses();
+            
+            // Apply filters
+            const majorFilter = document.getElementById('adminMajorFilter').value;
+            const statusFilter = document.getElementById('adminStatusFilter').value;
+            
+            if (majorFilter !== 'all') {
+                theses = theses.filter(t => t.major === majorFilter);
+            }
+            
+            if (statusFilter !== 'all') {
+                theses = theses.filter(t => t.status === statusFilter);
+            }
+
+            const container = document.getElementById('allTheses');
+            
+            if (theses.length === 0) {
+                container.innerHTML = '<p>No thesis submissions matching the filters.</p>';
+                return;
+            }
+
+            container.innerHTML = theses.map(thesis => `
+                <div class="thesis-card status-${thesis.status}">
+                    <div class="thesis-header">
+                        <div class="thesis-title">
+                            <h4>${thesis.title}</h4>
+                        </div>
+                        <div class="thesis-badges">
+                            <span class="major-badge ${getMajorBadgeClass(thesis.major)}">${getMajorName(thesis.major)}</span>
+                            <span class="status-badge status-${thesis.status}-badge">${thesis.status.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <p><strong>Student:</strong> ${thesis.studentName}</p>
+                    <p><strong>Submitted:</strong> ${new Date(thesis.submissionDate).toLocaleDateString()}</p>
+                    ${thesis.reviewDate ? `<p><strong>Reviewed:</strong> ${new Date(thesis.reviewDate).toLocaleDateString()}</p>` : ''}
+                    <div class="file-info">
+                        <span>📄 ${thesis.filename}</span>
+                        <button onclick="previewThesis(${thesis.id})" class="btn-preview">👁️ Preview</button>
+                    </div>
+                    <button onclick="deleteThesis(${thesis.id})" class="btn-danger">Delete Thesis</button>
+                </div>
+            `).join('');
+        }
+
+        function resetAdminFilters() {
+            document.getElementById('adminMajorFilter').value = 'all';
+            document.getElementById('adminStatusFilter').value = 'all';
+            loadAllTheses();
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                const users = db.getUsers().filter(u => u.id !== userId);
+                db.saveUsers(users);
+                showNotification('User deleted successfully', 'success');
+                loadUsersList();
+            }
+        }
+
+        function deleteThesis(thesisId) {
+            if (confirm('Are you sure you want to delete this thesis?')) {
+                const theses = db.getTheses().filter(t => t.id !== thesisId);
+                db.saveTheses(theses);
+                showNotification('Thesis deleted successfully', 'success');
+                loadAllTheses();
+                loadAdminStats();
+            }
+        }
+
+        // Public functions
+        function loadPublicData() {
+            let approvedTheses = db.getTheses().filter(t => t.status === 'approved');
+            
+            // Apply major filter
+            const majorFilter = document.getElementById('publicMajorFilter').value;
+            if (majorFilter !== 'all') {
+                approvedTheses = approvedTheses.filter(t => t.major === majorFilter);
+            }
+
+            displayPublicTheses(approvedTheses);
+        }
+
+        function displayPublicTheses(theses) {
+            const container = document.getElementById('publicTheses');
+            
+            if (theses.length === 0) {
+                container.innerHTML = '<p>No approved theses available matching the filter.</p>';
+                return;
+            }
+
+            container.innerHTML = theses.map(thesis => `
+                <div class="thesis-card status-approved">
+                    <div class="thesis-header">
+                        <div class="thesis-title">
+                            <h4>${thesis.title}</h4>
+                        </div>
+                        <div class="thesis-badges">
+                            <span class="major-badge ${getMajorBadgeClass(thesis.major)}">${getMajorName(thesis.major)}</span>
+                        </div>
+                    </div>
+                    <p><strong>Author:</strong> ${thesis.studentName}</p>
+                    <p><strong>Keywords:</strong> ${thesis.keywords}</p>
+                    <p><strong>Abstract:</strong> ${thesis.abstract}</p>
+                    <p><strong>Published:</strong> ${new Date(thesis.reviewDate).toLocaleDateString()}</p>
+                    <div class="file-info">
+                        <span>📄 ${thesis.filename}</span>
+                        <button onclick="previewThesis(${thesis.id})" class="btn-preview">👁️ Preview</button>
+                    </div>
+                    <button onclick="downloadThesis('${thesis.filename}')" class="btn-success">📥 Download PDF</button>
+                </div>
+            `).join('');
+        }
+
+        function searchPublicTheses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let approvedTheses = db.getTheses().filter(t => t.status === 'approved');
+            
+            // Apply major filter first
+            const majorFilter = document.getElementById('publicMajorFilter').value;
+            if (majorFilter !== 'all') {
+                approvedTheses = approvedTheses.filter(t => t.major === majorFilter);
+            }
+            
+            if (!searchTerm) {
+                displayPublicTheses(approvedTheses);
+                return;
+            }
+
+            const filteredTheses = approvedTheses.filter(thesis => 
+                thesis.title.toLowerCase().includes(searchTerm) ||
+                thesis.keywords.toLowerCase().includes(searchTerm) ||
+                thesis.studentName.toLowerCase().includes(searchTerm) ||
+                thesis.abstract.toLowerCase().includes(searchTerm)
+            );
+
+            displayPublicTheses(filteredTheses);
+        }
+
+        function resetPublicFilters() {
+            document.getElementById('publicMajorFilter').value = 'all';
+            document.getElementById('searchInput').value = '';
+            loadPublicData();
+        }
+
+        function downloadThesis(filename) {
+            showNotification(`Downloading ${filename}...`, 'info');
+            // In a real application, this would trigger an actual file download
+            setTimeout(() => {
+                showNotification('Download completed!', 'success');
+            }, 1000);
+        }
+
+        // Preview functions
+        function previewUploadedFile() {
+            if (!window.currentUploadedFile) {
+                showNotification('No file to preview', 'error');
+                return;
+            }
+            
+            showPreviewModal(window.currentUploadedFile.name, window.currentUploadedFile.data);
+        }
+
+        function previewThesis(thesisId) {
+            const thesis = db.getTheses().find(t => t.id === thesisId);
+            if (!thesis) {
+                showNotification('Thesis not found', 'error');
+                return;
+            }
+
+            const fileData = db.getFile(thesisId);
+            if (fileData) {
+                showPreviewModal(thesis.filename, fileData.data);
+            } else {
+                // Generate a sample PDF preview for demo purposes
+                const samplePdfData = generateSamplePdfPreview(thesis);
+                showPreviewModal(thesis.filename, samplePdfData);
+            }
+        }
+
+        function showPreviewModal(filename, fileData) {
+            const modal = document.getElementById('previewModal');
+            const title = document.getElementById('previewTitle');
+            const frame = document.getElementById('previewFrame');
+            
+            title.textContent = `Preview: ${filename}`;
+            
+            if (fileData && fileData.startsWith('data:application/pdf')) {
+                // Multi-method PDF display approach for better compatibility
+                frame.innerHTML = `
+                    <div style="width: 100%; height: 100%; position: relative;">
+                        <iframe 
+                            id="pdfIframe" 
+                            src="${fileData}" 
+                            width="100%" 
+                            height="100%" 
+                            style="border: none; border-radius: 8px;"
+                            onload="handlePdfLoad()"
+                            onerror="handlePdfError()">
+                        </iframe>
+                        <div id="pdfFallback" style="display: none; text-align: center; padding: 40px;">
+                            <h3 style="color: #4a5568; margin-bottom: 20px;">📄 PDF Document</h3>
+                            <p style="margin-bottom: 20px;">Browser PDF viewer not available. Use the options below:</p>
+                            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                <a href="${fileData}" target="_blank" style="display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                                    🔗 Open in New Tab
+                                </a>
+                                <button onclick="downloadPdfData('${fileData}', '${filename}')" style="padding: 12px 24px; background: #48bb78; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                                    💾 Download PDF
+                                </button>
+                            </div>
+                            <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; font-size: 14px;">
+                                <strong>Alternative:</strong> Try enabling PDF viewing in your browser settings or use a PDF extension.
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Enhanced document preview with better formatting
+                const thesis = db.getTheses().find(t => t.filename === filename);
+                frame.innerHTML = `
+                    <div style="width: 100%; height: 100%; overflow-y: auto; padding: 20px;">
+                        <div style="max-width: 800px; margin: 0 auto; font-family: 'Times New Roman', serif; line-height: 1.6; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            ${thesis ? `
+                                <!-- Title Page -->
+                                <div style="text-align: center; margin-bottom: 50px; padding-bottom: 30px; border-bottom: 3px solid #667eea;">
+                                    <h1 style="color: #2d3748; font-size: 28px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">${thesis.title}</h1>
+                                    <div style="margin: 20px 0; font-size: 18px; color: #4a5568;">
+                                        <p style="margin: 10px 0;"><strong>by</strong></p>
+                                        <p style="margin: 10px 0; font-weight: bold;">${thesis.studentName}</p>
+                                    </div>
+                                    <div style="margin: 30px 0; font-size: 14px; color: #718096;">
+                                        <p>A thesis submitted in partial fulfillment</p>
+                                        <p>of the requirements for the degree in</p>
+                                        <p style="font-weight: bold; margin-top: 10px;">${getMajorName(thesis.major)}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Document Information -->
+                                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                                    <h3 style="color: #4a5568; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Document Information</h3>
+                                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 14px;">
+                                        <strong>Filename:</strong><span>${filename}</span>
+                                        <strong>Author:</strong><span>${thesis.studentName}</span>
+                                        <strong>Department:</strong><span>${getMajorName(thesis.major)}</span>
+                                        <strong>Submitted:</strong><span>${new Date(thesis.submissionDate).toLocaleDateString()}</span>
+                                        ${thesis.reviewDate ? `<strong>Approved:</strong><span>${new Date(thesis.reviewDate).toLocaleDateString()}</span>` : ''}
+                                        <strong>Status:</strong><span style="padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;" class="status-${thesis.status}-badge">${thesis.status.toUpperCase()}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Keywords -->
+                                <div style="margin-bottom: 30px;">
+                                    <h3 style="color: #4a5568; margin-bottom: 10px;">Keywords</h3>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        ${thesis.keywords.split(',').map(keyword => 
+                                            `<span style="background: #e6f3ff; color: #1e40af; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">${keyword.trim()}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Abstract -->
+                                <div style="margin-bottom: 30px;">
+                                    <h3 style="color: #4a5568; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Abstract</h3>
+                                    <div style="text-align: justify; font-style: italic; background: #f7fafc; padding: 20px; border-left: 4px solid #667eea; border-radius: 0 8px 8px 0;">
+                                        ${thesis.abstract}
+                                    </div>
+                                </div>
+
+                                <!-- Review Comments -->
+                                ${thesis.comments ? `
+                                    <div style="margin-bottom: 30px;">
+                                        <h3 style="color: #4a5568; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Review Comments</h3>
+                                        <div style="background: ${thesis.status === 'approved' ? '#f0fff4' : '#fef2f2'}; padding: 15px; border-radius: 8px; border-left: 4px solid ${thesis.status === 'approved' ? '#22c55e' : '#ef4444'};">
+                                            <p style="margin: 0; font-style: italic;">"${thesis.comments}"</p>
+                                            ${thesis.reviewerName ? `<p style="margin: 10px 0 0 0; font-size: 12px; color: #6b7280;">— ${thesis.reviewerName}</p>` : ''}
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                <!-- Document Notice -->
+                                <div style="margin-top: 40px; padding: 20px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; text-align: center;">
+                                    <p style="margin: 0; color: #92400e; font-size: 14px;">
+                                        <strong>📄 Full Document Preview</strong><br>
+                                        This is a formatted preview of the thesis document. In a production system, the complete PDF content would be displayed here with full text, figures, and formatting.
+                                    </p>
+                                </div>
+                            ` : `
+                                <div style="text-align: center; padding: 60px;">
+                                    <h2 style="color: #4a5568; margin-bottom: 20px;">📄 Document Preview</h2>
+                                    <p style="font-size: 18px; margin-bottom: 10px;"><strong>${filename}</strong></p>
+                                    <p style="color: #6b7280;">This is a simulated preview. In a real system, the actual PDF content would be displayed here.</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // Helper functions for PDF handling
+        function handlePdfLoad() {
+            // PDF loaded successfully in iframe
+            console.log('PDF loaded successfully');
+        }
+
+        function handlePdfError() {
+            // Show fallback options when PDF fails to load
+            document.getElementById('pdfIframe').style.display = 'none';
+            document.getElementById('pdfFallback').style.display = 'block';
+        }
+
+        function downloadPdfData(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showNotification(`Downloading ${filename}...`, 'info');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function generateSamplePdfPreview(thesis) {
+            // This would normally return actual PDF data
+            // For demo purposes, we'll return null to use the HTML preview
+            return null;
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFileUpload();
+            toggleMajorField('login');
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                const reviewModal = document.getElementById('reviewModal');
+                const previewModal = document.getElementById('previewModal');
+                const editUserModal = document.getElementById('editUserModal');
+                
+                if (event.target === reviewModal) {
+                    closeReviewModal();
+                }
+                
+                if (event.target === previewModal) {
+                    closePreviewModal();
+                }
+
+                if (event.target === editUserModal) {
+                    closeEditUserModal();
+                }
+            });
+
+            // Enter key login
+            document.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !document.getElementById('loginSection').classList.contains('hidden')) {
+                    const activeTab = document.querySelector('.login-form .tab.active').textContent.toLowerCase();
+                    if (activeTab === 'login') {
+                        login();
+                    } else if (activeTab === 'register') {
+                        register();
+                    }
+                }
+            });
+        });
+
+        // Sample data initialization (for demo purposes)
+        function initSampleData() {
+            const existingTheses = db.getTheses();
+            if (existingTheses.length === 0) {
+                // Add some sample theses
+                const sampleTheses = [
+                    {
+                        id: 1001,
+                        title: "Machine Learning Applications in Healthcare",
+                        major: "cs",
+                        abstract: "This research explores the application of machine learning algorithms in healthcare systems, focusing on predictive analytics for patient outcomes and disease diagnosis. The study examines various ML techniques including neural networks, decision trees, and ensemble methods applied to medical datasets.",
+                        keywords: "machine learning, healthcare, predictive analytics, AI, medical diagnosis",
+                        filename: "ml_healthcare_thesis.pdf",
+                        studentId: 3,
+                        studentName: "Alice Student",
+                        submissionDate: "2024-01-15T10:30:00Z",
+                        status: "approved",
+                        reviewDate: "2024-01-20T14:20:00Z",
+                        reviewerId: 2,
+                        reviewerName: "Dr. John Teacher",
+                        comments: "Excellent research with practical applications. Well written and thoroughly researched."
+                    },
+                    {
+                        id: 1002,
+                        title: "Sustainable Energy Systems: A Comprehensive Analysis",
+                        major: "ee",
+                        abstract: "An in-depth analysis of renewable energy systems and their integration into existing power grids, examining efficiency and sustainability metrics. This work focuses on solar, wind, and hybrid systems with emphasis on grid stability and economic viability.",
+                        keywords: "renewable energy, sustainability, power systems, green technology, grid integration",
+                        filename: "sustainable_energy_thesis.pdf",
+                        studentId: 4,
+                        studentName: "Bob Green",
+                        submissionDate: "2024-02-01T09:15:00Z",
+                        status: "pending"
+                    },
+                    {
+                        id: 1003,
+                        title: "Advanced Robotics Control Systems",
+                        major: "me",
+                        abstract: "Development of advanced control algorithms for robotic systems in manufacturing environments. The research presents novel approaches to precision control, path planning, and adaptive learning in industrial robotics applications.",
+                        keywords: "robotics, control systems, automation, manufacturing, precision engineering",
+                        filename: "robotics_control_thesis.pdf",
+                        studentId: 5,
+                        studentName: "Carol Engineer",
+                        submissionDate: "2024-02-10T11:20:00Z",
+                        status: "approved",
+                        reviewDate: "2024-02-15T16:30:00Z",
+                        reviewerId: 2,
+                        reviewerName: "Dr. John Teacher",
+                        comments: "Innovative approach to control systems with practical applications."
+                    },
+                    {
+                        id: 1004,
+                        title: "Blockchain Technology in Supply Chain Management",
+                        major: "it",
+                        abstract: "This thesis investigates the implementation of blockchain technology in supply chain management systems to enhance transparency, traceability, and security. The research includes a prototype system demonstrating practical applications.",
+                        keywords: "blockchain, supply chain, transparency, security, distributed systems",
+                        filename: "blockchain_supply_thesis.pdf",
+                        studentId: 6,
+                        studentName: "David Tech",
+                        submissionDate: "2024-02-20T14:00:00Z",
+                        status: "rejected",
+                        reviewDate: "2024-02-25T10:30:00Z",
+                        reviewerId: 2,
+                        reviewerName: "Dr. John Teacher",
+                        comments: "The research methodology needs improvement and more detailed analysis is required. Please revise and resubmit."
+                    }
+                ];
+                
+                db.saveTheses(sampleTheses);
+                
+                // Add more sample users
+                const users = db.getUsers();
+                users.push(
+                    {
+                        id: 4,
+                        username: 'bob_green',
+                        password: 'password123',
+                        role: 'student',
+                        fullName: 'Bob Green',
+                        email: 'bob@university.com',
+                        major: 'ee'
+                    },
+                    {
+                        id: 5,
+                        username: 'carol_eng',
+                        password: 'password123',
+                        role: 'student',
+                        fullName: 'Carol Engineer',
+                        email: 'carol@university.com',
+                        major: 'me'
+                    },
+                    {
+                        id: 6,
+                        username: 'david_tech',
+                        password: 'password123',
+                        role: 'student',
+                        fullName: 'David Tech',
+                        email: 'david@university.com',
+                        major: 'it'
+                    },
+                    {
+                        id: 7,
+                        username: 'teacher2',
+                        password: 'teacher123',
+                        role: 'teacher',
+                        fullName: 'Dr. Sarah Professor',
+                        email: 'sarah@university.com',
+                        major: 'ee'
+                    }
+                );
+                db.saveUsers(users);
+            }
+        }
+
+        // Initialize sample data on first load
+        initSampleData();
+    </script>
+</body>
+</html>
